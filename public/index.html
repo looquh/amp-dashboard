@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AML Regulatory Intelligence — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-page: #F5F5F7;
+        --bg-white: #FFF;
+        --bg-subtle: #FAFAFA;
+        --bg-hover: #F0F0F3;
+        --bg-sidebar: #1A1B1F;
+        --text-primary: #111114;
+        --text-secondary: #555560;
+        --text-muted: #8E8E99;
+        --text-white: #FFF;
+        --border: #E5E5EA;
+        --border-light: #EDEDF0;
+        --accent-red: #E5243B;
+        --accent-red-soft: #FEF0F2;
+        --accent-amber: #D97A0B;
+        --accent-amber-soft: #FFF7ED;
+        --accent-teal: #0F8C6E;
+        --accent-teal-soft: #ECFDF5;
+        --accent-blue: #2563EB;
+        --accent-blue-soft: #EFF6FF;
+        --accent-purple: #7C3AED;
+        --accent-purple-soft: #F5F3FF;
+        --accent-rose: #BE185D;
+        --accent-rose-soft: #FDF2F8;
+        --accent-indigo: #4338CA;
+        --accent-indigo-soft: #EEF2FF;
+        --accent-event: #C2410C;
+        --accent-event-soft: #FFF7ED;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+        --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, .04), 0 1px 2px rgba(0, 0, 0, .06);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, .06), 0 1px 3px rgba(0, 0, 0, .04);
+        --shadow-lg: 0 12px 40px rgba(0, 0, 0, .08), 0 2px 6px rgba(0, 0, 0, .04);
+        --shadow-xl: 0 20px 60px rgba(0, 0, 0, .12);
+        --transition: .2s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box
+    }
+
+    body {
+        font-family: var(--font-body);
+        background: var(--bg-page);
+        color: var(--text-primary);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        display: flex
+    }
+
+    ::-webkit-scrollbar {
+        width:6px
+    }
+
+    ::-webkit-scrollbar-track {
+        background:transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #CCC;
+        border-radius: 3px
+    }
+
+    .sidebar {
+        width: 260px;
+        min-height: 100vh;
+        background: var(--bg-sidebar);
+        padding: 28px 20px;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 100
+    }
+
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 36px;
+        padding: 0 4px
+    }
+
+    .sidebar-logo-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--accent-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: #fff;
+        font-family: var(--font-mono)
+    }
+
+    .sidebar-logo-text {
+        color: var(--text-white);
+        font-size: 15px;
+        font-weight: 700;
+        line-height:1.25
+    }
+
+    .sidebar-logo-text span {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: #8E8E99;
+        margin-top: 2px
+    }
+
+    .sidebar-nav {
+        flex:1
+    }
+
+    .nav-section-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: #6B6B76;
+        font-weight: 600;
+        padding: 0 12px;
+        margin-bottom: 10px;
+        margin-top: 24px
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        color: #A0A0AB;
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        margin-bottom: 2px
+    }
+
+    .nav-item:hover {
+        background: rgba(255, 255, 255, .06);
+        color:#fff
+    }
+
+    .nav-item.active {
+        background: rgba(255, 255, 255, .08);
+        color: #fff
+    }
+
+    .nav-item svg {
+        width: 18px;
+        height: 18px;
+        opacity: .7;
+        flex-shrink:0
+    }
+
+    .nav-item.active svg {
+        opacity: 1
+    }
+
+    .nav-badge {
+        margin-left: auto;
+        font-size: 11px;
+        font-family: var(--font-mono);
+        background: rgba(255, 255, 255, .1);
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-weight: 500
+    }
+
+    .sidebar-source {
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .source-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: #6B6B76;
+        font-weight: 600;
+        margin-bottom: 10px
+    }
+
+    .source-toggle {
+        display: flex;
+        gap: 4px;
+        background: rgba(255, 255, 255, .06);
+        border-radius: 8px;
+        padding: 3px
+    }
+
+    .source-btn {
+        flex: 1;
+        padding: 7px 0;
+        border-radius: 6px;
+        border: none;
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        background: transparent;
+        color: #8E8E99
+    }
+
+    .source-btn.active {
+        background: var(--accent-red);
+        color:#fff
+    }
+
+    .source-btn:hover:not(.active) {
+        color: #fff
+    }
+
+    .source-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #6B6B76;
+        margin-top: 10px;
+        padding: 0 4px
+    }
+
+    .source-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34D399;
+        box-shadow: 0 0 6px rgba(52, 211, 153, .5);
+        animation: pulse 2s ease infinite
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity:1
+        }
+
+        50% {
+            opacity: .4
+        }
+    }
+
+    .main-wrap {
+        margin-left: 260px;
+        flex: 1;
+        min-height: 100vh
+    }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(245, 245, 247, .85);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border-light);
+        padding: 0 40px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between
+    }
+
+    .topbar-left {
+        display: flex;
+        align-items: center;
+        gap:16px
+    }
+
+    .topbar-title {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing:-.02em
+    }
+
+    .topbar-sub {
+        font-size: 13px;
+        color: var(--text-muted)
+    }
+
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px
+    }
+
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition)
+    }
+
+    .btn-icon:hover {
+        border-color: var(--accent-red);
+        color: var(--accent-red);
+        box-shadow:var(--shadow-sm)
+    }
+
+    .btn-icon.spinning svg {
+        animation: spin .8s ease
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg)
+        }
+    }
+
+    .last-update {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        background: var(--bg-white);
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border-light)
+    }
+
+    .content {
+        padding: 28px 40px 80px;
+        max-width: 1280px
+    }
+
+    .stats-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap
+    }
+
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        padding: 10px 16px;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 10px
+    }
+
+    .stat-card:hover {
+        box-shadow: var(--shadow-sm)
+    }
+
+    .stat-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        flex-shrink: 0
+    }
+
+    .stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 500;
+        line-height: 1.2
+    }
+
+    .stat-value {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -.03em;
+        line-height: 1
+    }
+
+    .stat-sub {
+        display: none
+    }
+
+    .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        margin-top: 8px
+    }
+
+    .section-label {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        display: flex;
+        align-items: center;
+        gap: 8px
+    }
+
+    .section-label .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%
+    }
+
+    .section-count {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-family: var(--font-mono)
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        flex-wrap: wrap
+    }
+
+    .filter-chip {
+        padding: 7px 16px;
+        border-radius: 40px;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-secondary);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 6px
+    }
+
+    .filter-chip:hover {
+        border-color: #CCC
+    }
+
+    .filter-chip .cnt {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        min-width: 18px;
+        text-align: center;
+        padding: 0 4px;
+        border-radius: 9px;
+        background: var(--bg-page)
+    }
+
+    .filter-chip.active {
+        border-color: transparent;
+        color:#fff
+    }
+
+    .filter-chip.active .cnt {
+        background: rgba(255, 255, 255, .25);
+        color: #fff
+    }
+
+    .filter-chip.f-all.active {
+        background:var(--text-primary)
+    }
+
+    .filter-chip.f-amla.active {
+        background:var(--accent-red)
+    }
+
+    .filter-chip.f-gwg.active {
+        background:var(--accent-amber)
+    }
+
+    .filter-chip.f-enforcement.active {
+        background:var(--accent-teal)
+    }
+
+    .filter-chip.f-ki-tools.active {
+        background:var(--accent-blue)
+    }
+
+    .filter-chip.f-guidance.active {
+        background:var(--accent-purple)
+    }
+
+    .filter-chip.f-sanctions.active {
+        background:var(--accent-rose)
+    }
+
+    .filter-chip.f-regulation.active {
+        background: var(--accent-indigo)
+    }
+
+    .trending-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 36px
+    }
+
+    .featured-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column
+    }
+
+    .featured-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px)
+    }
+
+    .featured-thumb {
+        height: 6px;
+        position: relative;
+        overflow: hidden
+    }
+
+    .featured-thumb-bg {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0
+    }
+
+    .featured-thumb-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 20px
+    }
+
+    .thumb-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        font-family: var(--font-mono);
+        background: rgba(255, 255, 255, .2);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, .15)
+    }
+
+    .thumb-source-tag {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, .9);
+        background: rgba(0, 0, 0, .2);
+        backdrop-filter: blur(8px);
+        padding: 4px 12px;
+        border-radius: 20px
+    }
+
+    .featured-body {
+        padding: 20px 22px 22px;
+        flex: 1;
+        display: flex;
+        flex-direction: column
+    }
+
+    .featured-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em
+    }
+
+    .badge-trending {
+        background: #FEF3C7;
+        color:#92400E
+    }
+
+    .badge-trending::before {
+        content: '▲';
+        font-size: 7px
+    }
+
+    .badge-cat-amla {
+        background: var(--accent-red-soft);
+        color:var(--accent-red)
+    }
+
+    .badge-cat-gwg {
+        background: var(--accent-amber-soft);
+        color:var(--accent-amber)
+    }
+
+    .badge-cat-enforcement {
+        background: var(--accent-teal-soft);
+        color:var(--accent-teal)
+    }
+
+    .badge-cat-ki-tools {
+        background: var(--accent-blue-soft);
+        color:var(--accent-blue)
+    }
+
+    .badge-cat-guidance {
+        background: var(--accent-purple-soft);
+        color:var(--accent-purple)
+    }
+
+    .badge-cat-sanctions {
+        background: var(--accent-rose-soft);
+        color:var(--accent-rose)
+    }
+
+    .badge-cat-regulation {
+        background: var(--accent-indigo-soft);
+        color: var(--accent-indigo)
+    }
+
+    .featured-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: -.015em;
+        margin-bottom: 8px
+    }
+
+    .featured-excerpt {
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        flex: 1;
+        margin-bottom: 16px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden
+    }
+
+    .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 14px;
+        border-top: 1px solid var(--border-light)
+    }
+
+    .card-source-link {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent-red);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: var(--transition)
+    }
+
+    .card-source-link:hover {
+        text-decoration: underline
+    }
+
+    .card-time {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-family: var(--font-mono)
+    }
+
+    .news-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 40px
+    }
+
+    .news-row {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        display: grid;
+        grid-template-columns: 6px 1fr auto;
+        gap: 16px;
+        align-items: center;
+        cursor: pointer;
+        transition: var(--transition)
+    }
+
+    .news-row:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px)
+    }
+
+    .news-row-accent {
+        width: 6px;
+        border-radius: 3px;
+        align-self: stretch;
+        min-height: 40px
+    }
+
+    .news-row-content {
+        min-width: 0
+    }
+
+    .news-row-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px
+    }
+
+    .news-row-title {
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: -.01em;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden
+    }
+
+    .news-row-excerpt {
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden
+    }
+
+    .news-row-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        min-width: 120px
+    }
+
+    .news-row-right .card-source-link {
+        font-size: 11px
+    }
+
+    .conf-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-bottom: 40px
+    }
+
+    .conf-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        transition: var(--transition);
+        display: flex;
+        gap: 16px;
+        text-decoration: none;
+        color: inherit
+    }
+
+    .conf-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px)
+    }
+
+    .conf-date-block {
+        min-width: 56px;
+        text-align: center;
+        background: var(--accent-event-soft);
+        border-radius: 10px;
+        padding: 10px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #FFEDD5
+    }
+
+    .conf-day {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--accent-event);
+        line-height:1
+    }
+
+    .conf-month {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--accent-event);
+        letter-spacing: .05em;
+        margin-top:2px
+    }
+
+    .conf-year {
+        font-size: 10px;
+        color: #9A5D30;
+        margin-top: 1px
+    }
+
+    .conf-info {
+        flex: 1;
+        min-width:0
+    }
+
+    .conf-title {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.35;
+        margin-bottom: 6px;
+        letter-spacing: -.01em
+    }
+
+    .conf-details {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height:1.5
+    }
+
+    .conf-details strong {
+        color: var(--text-secondary);
+        font-weight: 600
+    }
+
+    .conf-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent-event);
+        text-decoration: none;
+        margin-top: 6px;
+        transition: var(--transition)
+    }
+
+    .conf-link:hover {
+        text-decoration: underline
+    }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(0, 0, 0, .35);
+        backdrop-filter: blur(6px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 40px
+    }
+
+    .modal-overlay.open {
+        display: flex
+    }
+
+    .modal {
+        background: var(--bg-white);
+        border-radius: var(--radius-xl);
+        width: 100%;
+        max-width: 520px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden
+    }
+
+    .modal-header {
+        padding:28px 32px 0
+    }
+
+    .modal-header h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom:6px
+    }
+
+    .modal-header p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.5
+    }
+
+    .modal-body {
+        padding: 20px 32px 28px
+    }
+
+    .modal-input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--bg-page);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        outline: none;
+        transition: var(--transition)
+    }
+
+    .modal-input:focus {
+        border-color: var(--accent-red);
+        box-shadow: 0 0 0 3px var(--accent-red-soft)
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px
+    }
+
+    .btn-fill {
+        flex: 1;
+        padding: 11px;
+        border-radius: var(--radius-sm);
+        border: none;
+        background: var(--accent-red);
+        color: #fff;
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition)
+    }
+
+    .btn-fill:hover {
+        box-shadow: 0 4px 16px rgba(229, 36, 59, .3)
+    }
+
+    .btn-outline {
+        flex: 1;
+        padding: 11px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-secondary);
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition)
+    }
+
+    .btn-outline:hover {
+        border-color: #CCC
+    }
+
+    .detail-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, .3);
+        backdrop-filter: blur(4px);
+        display: none;
+        justify-content: flex-end
+    }
+
+    .detail-overlay.open {
+        display: flex
+    }
+
+    .detail-panel {
+        width: 580px;
+        max-width: 90vw;
+        height: 100vh;
+        background: var(--bg-white);
+        box-shadow: var(--shadow-xl);
+        overflow-y: auto;
+        padding: 40px;
+        animation: slideIn .25s ease
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(40px);
+            opacity:0
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1
+        }
+    }
+
+    .detail-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--bg-page);
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+        margin-bottom: 24px
+    }
+
+    .detail-close:hover {
+        color: var(--text-primary);
+        border-color: #CCC
+    }
+
+    .detail-panel h2 {
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.3;
+        letter-spacing: -.02em;
+        margin-bottom: 12px;
+        margin-top: 16px
+    }
+
+    .detail-meta {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap
+    }
+
+    .detail-meta a {
+        color: var(--accent-red);
+        text-decoration: none;
+        font-weight:600
+    }
+
+    .detail-meta a:hover {
+        text-decoration: underline
+    }
+
+    .detail-body {
+        font-size: 15px;
+        line-height: 1.8;
+        color:var(--text-secondary)
+    }
+
+    .detail-body p {
+        margin-bottom: 16px
+    }
+
+    .tab-panel {
+        display:none
+    }
+
+    .tab-panel.active {
+        display: block
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 0;
+        color:var(--text-muted)
+    }
+
+    .empty-state h3 {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 6px
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform:translateY(12px)
+        }
+
+        to {
+            opacity: 1;
+            transform:translateY(0)
+        }
+    }
+
+    .fade {
+        animation: fadeUp .4s ease forwards;
+        opacity: 0
+    }
+
+    @media (max-width: 1100px) {
+        .sidebar {
+            display:none
+        }
+
+        .main-wrap {
+            margin-left:0
+        }
+
+        .trending-grid {
+            grid-template-columns:1fr
+        }
+
+        .conf-grid {
+            grid-template-columns: 1fr
+        }
+    }
+
+    @media (max-width: 768px) {
+        .content {
+            padding:20px
+        }
+
+        .topbar {
+            padding: 0 20px
+        }
+    }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-mark">AML</div>
+            <div class="sidebar-logo-text">
+                Regulatory Intel
+                <span>EU · Banks & Insurers</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Navigation</div>
+            <a class="nav-item active" onclick="switchTab('news')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                News Dashboard
+            </a>
+            <a class="nav-item" onclick="switchTab('events')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Fachtagungen
+                <span class="nav-badge" id="eventCount">7</span>
+            </a>
+            <div class="nav-section-label">Kategorien</div>
+            <a class="nav-item" onclick="setFilter('amla')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                AMLA
+                <span class="nav-badge" id="navAmla">0</span>
+            </a>
+            <a class="nav-item" onclick="setFilter('gwg')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                GwG
+                <span class="nav-badge" id="navGwg">0</span>
+            </a>
+            <a class="nav-item" onclick="setFilter('regulation')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/>
+                    <line x1="6" y1="11" x2="6" y2="21"/>
+                    <line x1="12" y1="11" x2="12" y2="21"/>
+                    <line x1="18" y1="11" x2="18" y2="21"/>
+                </svg>
+                Regulierung
+                <span class="nav-badge" id="navRegulation">0</span>
+            </a>
+            <a class="nav-item" onclick="setFilter('enforcement')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Enforcement
+                <span class="nav-badge" id="navEnforcement">0</span>
+            </a>
+            <a class="nav-item" onclick="setFilter('ki-tools')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="4" width="16" height="16" rx="2"/>
+                    <line x1="9" y1="9" x2="9.01" y2="9"/>
+                    <line x1="15" y1="9" x2="15.01" y2="9"/>
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                </svg>
+                KI-Tools
+                <span class="nav-badge" id="navKi">0</span>
+            </a>
+            <a class="nav-item" onclick="setFilter('guidance')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                Guidance
+                <span class="nav-badge" id="navGuidance">0</span>
+            </a>
+            <a class="nav-item" onclick="setFilter('sanctions')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+                Sanctions/CFT
+                <span class="nav-badge" id="navSanctions">0</span>
+            </a>
+            <div class="nav-section-label" style="margin-top:28px">Tools</div>
+            <a class="nav-item" onclick="switchTab('terms')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Search Terms
+            </a>
+            <a class="nav-item" onclick="switchTab('papers')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                Papers & PDFs
+            </a>
+        </nav>
+        <div class="sidebar-source">
+            <div class="source-label">Datenquelle</div>
+            <div class="source-status">
+                <div class="source-dot"></div>
+                <span id="statusText">Google News + Regulator RSS</span>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-wrap">
+        <header class="topbar">
+            <div class="topbar-left">
+                <div>
+                    <div class="topbar-title" id="pageTitle">News Dashboard</div>
+                    <div class="topbar-sub" id="pageSub">Europäische AML/CFT-Regulierung · Banken & Versicherer</div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <input type="text" id="searchInput" oninput="applySearch()" placeholder="🔍 Suche in News & Papers…" style="width:260px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-white);color:var(--text-primary);font-family:var(--font-body);font-size:12px;outline:none;transition:var(--transition)" onfocus="this.style.borderColor='var(--accent-red)';this.style.boxShadow='0 0 0 3px var(--accent-red-soft)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+                <div class="last-update" id="lastUpdate">—</div>
+                <button class="btn-icon" onclick="exportCSV()" title="CSV Export">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="refreshBtn" onclick="refreshNews()" title="Aktualisieren">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <polyline points="1 20 1 14 7 14"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="tab-panel active" id="panelNews">
+            <div class="content">
+                <section class="stats-row" id="statsRow"></section>
+                <section class="filter-row" id="filterRow"></section>
+                <div class="section-head">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--accent-amber)"></div>
+                        Trending
+                    </div>
+                    <div class="section-count" id="trendingCount"></div>
+                </div>
+                <section class="trending-grid" id="trendingGrid"></section>
+                <div class="section-head">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--text-muted)"></div>
+                        Alle Meldungen
+                    </div>
+                    <div class="section-count" id="allCount"></div>
+                </div>
+                <section class="news-list" id="newsList"></section>
+                <div class="empty-state" id="emptyState" style="display:none">
+                    <h3>Keine Meldungen geladen</h3>
+                    <p>Klicke auf den Refresh-Button oder wechsle die Datenquelle.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panelEvents">
+            <div class="content">
+                <div class="section-head" style="margin-top:0">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--accent-event)"></div>
+                        Anstehende Fachtagungen & Konferenzen
+                    </div>
+                </div>
+                <section class="conf-grid" id="confGrid"></section>
+                <div class="section-head">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--text-muted)"></div>
+                        Vergangene Veranstaltungen
+                    </div>
+                </div>
+                <section class="conf-grid" id="confPastGrid"></section>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panelTerms">
+            <div class="content">
+                <div class="section-head" style="margin-top:0">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--accent-blue)"></div>
+                        Search Terms für AML/KYC/Sanctions Monitoring
+                    </div>
+                </div>
+                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Diese Keywords werden für die automatische Kategorisierung und die Live-Suche (Google News + Regulator RSS) verwendet. Sie decken die Kernbereiche der EU-AML/CFT-Regulierung für Banken und Versicherer ab.</p>
+                <div id="searchTermsGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px"></div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panelPapers">
+            <div class="content">
+                <div class="section-head" style="margin-top:0">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--accent-red)"></div>
+                        Papers, Studien & PDFs
+                    </div>
+                    <button id="checkLinksBtn" onclick="checkAllLinks()" style="font-family:var(--font-body);font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-white);color:var(--text-secondary);cursor:pointer;transition:var(--transition)">🔗 Links prüfen</button>
+                </div>
+                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Direkt-Links zu Studien, Whitepapers und PDFs von Regulatoren, Big4 und Fachorganisationen zum Thema AML/CFT/Sanctions.</p>
+                <div id="papersGrid" style="display:flex;flex-direction:column;gap:10px"></div>
+                <div class="section-head" style="margin-top:32px">
+                    <div class="section-label">
+                        <div class="dot" style="background:var(--accent-amber)"></div>
+                        Live: Aktuelle Papers & Reports (Google News)
+                    </div>
+                </div>
+                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Automatisch geladene Treffer zu aktuellen AML/Sanctions-Studien und Reports.</p>
+                <div id="livePapersGrid" style="display:flex;flex-direction:column;gap:10px"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No API modal needed - using Google News RSS -->
+
+    <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+        <div class="detail-panel" id="detailPanel" onclick="event.stopPropagation()"></div>
+    </div>
+
+    <script>
+    const CATS = {
+        amla: {
+            label: 'AMLA',
+            color: 'var(--accent-red)',
+            bg: 'var(--accent-red-soft)',
+            icon: '🛡'
+        },
+        gwg: {
+            label: 'GwG',
+            color: 'var(--accent-amber)',
+            bg: 'var(--accent-amber-soft)',
+            icon: '📜'
+        },
+        regulation: {
+            label: 'Regulierung',
+            color: 'var(--accent-indigo)',
+            bg: 'var(--accent-indigo-soft)',
+            icon: '🏛'
+        },
+        enforcement: {
+            label: 'Enforcement',
+            color: 'var(--accent-teal)',
+            bg: 'var(--accent-teal-soft)',
+            icon: '⚖'
+        },
+        'ki-tools': {
+            label: 'KI-Tools',
+            color: 'var(--accent-blue)',
+            bg: 'var(--accent-blue-soft)',
+            icon: '🤖'
+        },
+        guidance: {
+            label: 'Guidance',
+            color: 'var(--accent-purple)',
+            bg: 'var(--accent-purple-soft)',
+            icon: '📖'
+        },
+        sanctions: {
+            label: 'Sanctions/CFT',
+            color: 'var(--accent-rose)',
+            bg: 'var(--accent-rose-soft)',
+            icon: '🚫'
+        }
+    };
+    const GRAD = {
+        amla: 'linear-gradient(135deg,#E5243B,#FF6B6B)',
+        gwg: 'linear-gradient(135deg,#D97A0B,#F59E0B)',
+        regulation: 'linear-gradient(135deg,#4338CA,#818CF8)',
+        enforcement: 'linear-gradient(135deg,#0F8C6E,#34D399)',
+        'ki-tools': 'linear-gradient(135deg,#2563EB,#60A5FA)',
+        guidance: 'linear-gradient(135deg,#7C3AED,#A78BFA)',
+        sanctions: 'linear-gradient(135deg,#BE185D,#F472B6)'
+    };
+
+    // ═══ SEARCH TERMS ═══
+    const SEARCH_TERMS = {
+        'AMLA & EU-Regulierung': ['AMLA', 'Anti-Money Laundering Authority', 'EU AML Package', 'AMLD6', 'AMLR', 'AMLAR', '6. Geldwäscherichtlinie', 'EU-Geldwäscheverordnung', 'Single Rulebook AML', 'AML/CFT framework EU'],
+        'GwG & Deutsches Recht': ['GwG', 'Geldwäschegesetz', 'GwG-Novelle', 'Transparenzregister', 'wirtschaftlich Berechtigter', 'BaFin Geldwäsche', 'FIU Deutschland', 'Verdachtsmeldung', '§ 43 GwG', 'Unstimmigkeitsmeldung', 'KWG § 25h'],
+        'Enforcement & Bußgelder': ['AML fine', 'Bußgeld Geldwäsche', 'enforcement action bank', 'BaFin Bußgeld', 'penalty money laundering', 'settlement AML', 'consent order', 'cease and desist AML', 'compliance monitor bank'],
+        'KYC & Customer Due Diligence': ['KYC', 'Know Your Customer', 'Customer Due Diligence', 'CDD', 'Enhanced Due Diligence', 'EDD', 'PEP', 'Politically Exposed Person', 'beneficial owner', 'UBO', 'onboarding compliance', 'identity verification'],
+        'Sanctions & Embargo': ['EU sanctions', 'Finanzsanktionen', 'Embargo', 'OFAC', 'sanctions screening', 'sanctions evasion', 'restrictive measures', 'asset freeze', 'EU restrictive measures', 'sanctions compliance bank', 'secondary sanctions', 'SDN list'],
+        'Terrorismusfinanzierung (CFT)': ['terrorism financing', 'Terrorismusfinanzierung', 'CFT', 'counter terrorism financing', 'terrorist financing risk', 'FATF Recommendation 5', 'STR terrorism', 'FIU terrorism', 'de-risking', 'correspondent banking CTF'],
+        'Transaction Monitoring': ['transaction monitoring', 'Transaktionsüberwachung', 'suspicious transaction', 'SAR', 'STR', 'Verdachtsmeldung', 'unusual transaction', 'wire transfer regulation', 'Travel Rule', 'Transfers of Funds Regulation'],
+        'KI & RegTech': ['AI AML', 'KI Geldwäsche', 'RegTech', 'machine learning compliance', 'name screening AI', 'graph analytics AML', 'explainable AI compliance', 'NLP compliance', 'false positive reduction', 'SupTech'],
+        'Guidance & Standards': ['EBA Guidelines AML', 'EIOPA AML', 'FATF recommendations', 'FATF mutual evaluation', 'risk-based approach', 'FATF grey list', 'Basel AML Index', 'Wolfsberg Group', 'Joint Guidelines AML', 'RTS AML'],
+        'Versicherungssektor': ['insurance AML', 'Versicherung Geldwäsche', 'life insurance money laundering', 'unit-linked AML', 'EIOPA guidelines', 'insurance fraud', 'Lebensversicherung KYC', 'Solvency II compliance', 'insurance sanctions screening'],
+    };
+
+    // No mock data — dashboard uses live sources only
+
+    const CONF = [
+    {
+        title: 'European Anti-Financial Crime Summit 2026',
+        date: new Date('2026-04-29'),
+        endDate: '29.04.2026',
+        location: 'Dublin, Irland',
+        organizer: 'AML Intelligence',
+        description: 'Top-Regulatoren, Policymaker und Law-Enforcement-Chiefs zu AFC-Praxis und neuen Enforcement-Trends.',
+        price: 'Ab €547 + VAT',
+        url: 'https://www.amlintelligence.com/asp-products/european-anti-financial-crime-summit-2026/',
+        upcoming: true
+    },
+    {
+        title: 'AML TALKS – Regpit / Taylor Wessing',
+        date: new Date('2026-05-07'),
+        endDate: 'Quartalsmäßig (nächste: Q2 2026)',
+        location: 'Berlin / Frankfurt',
+        organizer: 'Regpit & Taylor Wessing',
+        description: 'Kostenlose Vortrags- und Networking-Reihe zu Geldwäscheprävention und Financial Crime.',
+        price: 'Kostenlos',
+        url: 'https://regpit.com/aml-talks-taylorwessing',
+        upcoming: true
+    },
+    {
+        title: 'ACAMS Assembly Europe 2026',
+        date: new Date('2026-05-12'),
+        endDate: '11.–13.05.2026',
+        location: 'Frankfurt am Main',
+        organizer: 'ACAMS',
+        description: 'Globale und regionale AML-Entwicklungen. Workshops + Hauptkonferenz mit Top-Regulatoren.',
+        price: 'Siehe acams.org',
+        url: 'https://www.acams.org/en/events/the-assembly/the-assembly-europe',
+        upcoming: true
+    },
+    {
+        title: 'Nordic-Baltic AML / FinCrime & Tech Conference',
+        date: new Date('2026-05-20'),
+        endDate: '20.–21.05.2026',
+        location: 'Tallinn, Estland',
+        organizer: 'AML Conference Estonia',
+        description: 'EU-AML-Framework, AMLA-Aufsicht, AI, Sanctions, Fraud Detection und Cross-Border Intelligence.',
+        price: 'Siehe amlconference.ee',
+        url: 'https://www.amlconference.ee/',
+        upcoming: true
+    },
+    {
+        title: 'Berliner Geldwäsche-Tagung 2026',
+        date: new Date('2026-06-25'),
+        endDate: '25.–26.06.2026',
+        location: 'Park Inn, Berlin',
+        organizer: 'Forum Institut',
+        description: 'AMLA, BaFin, GwG, EU-Geldwäschepaket. Detailfragen und Umsetzungsempfehlungen. Präsenz oder Online.',
+        price: '€1.690 zzgl. MwSt.',
+        url: 'https://forum-institut.de/seminar/26063100-berliner-geldwaesche-tagung-2026',
+        upcoming: true
+    },
+    {
+        title: 'AFME European AML Conference 2026',
+        date: new Date('2026-09-15'),
+        endDate: '15.–16.09.2026',
+        location: 'Frankfurt am Main',
+        organizer: 'AFME',
+        description: 'Inaugural AFME-Event am AMLA-Sitz. CDD, FinTech/Crypto AML, Group-Wide Controls, AMLA Supervision.',
+        price: 'Ab €399 (Super Early Bird)',
+        url: 'https://www.afme.eu/events/events-calendar/afme-s-european-aml-conference-2026/',
+        upcoming: true
+    },
+    {
+        title: 'KURS 2026: Compliance & Geldwäsche',
+        date: new Date('2026-10-01'),
+        endDate: 'Oktober 2026 (TBD)',
+        location: 'Wien, Österreich',
+        organizer: 'imh',
+        description: 'Bankenkongress mit FMA-Schwerpunkten: RIS, Krypto, FATF, KI in Geldwäscheprävention.',
+        price: 'Siehe imh.at',
+        url: 'https://www.imh.at/veranstaltungen/seminar/konferenz-compliance-und-geldwaesche',
+        upcoming: true
+    },
+    {
+        title: 'BaFin Fachtagung GwG-Prävention 2025',
+        date: new Date('2025-11-20'),
+        endDate: '20.11.2025',
+        location: 'Bonn/Frankfurt',
+        organizer: 'BaFin',
+        description: '7. Fachtagung mit AMLA-Vorsitzender Bruna Szego als Keynote. EU-AML-Paket-Umsetzung.',
+        price: 'Kostenfrei (Einladung)',
+        url: 'https://www.bafin.de/SharedDocs/Veranstaltungen/DE/250429_Geldwaeschebekaempfung.html',
+        upcoming: false
+    },
+    {
+        title: 'AMLP 19th European AML & Financial Crime Conference',
+        date: new Date('2025-11-10'),
+        endDate: '10.–12.11.2025',
+        location: 'London, UK',
+        organizer: 'AMLP Forum',
+        description: 'FATF, EU AML Package, AMLA, MONEYVAL, Egmont Group, Europol. Plus Anti-Corruption Forum.',
+        price: 'Siehe amlpforum.com',
+        url: 'https://www.amlpforum.com/european-aml-financial-crime-conference/',
+        upcoming: false
+    },
+    ];
+
+    let state = {
+        source: 'gnews',
+        filter: localStorage.getItem('aml_fil') || 'all',
+        tab: 'news',
+        news: [],
+        searchQuery: ''
+    };
+    const MO = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+    function timeAgo(d) {
+        const s = Math.floor((Date.now() - d.getTime()) / 1000);
+        if (s < 60)
+            return 'gerade eben';
+        const m = Math.floor(s / 60);
+        if (m < 60)
+            return `vor ${m} Min.`;
+        const h = Math.floor(m / 60);
+        if (h < 24)
+            return `vor ${h} Std.`;
+        return d.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+    function catBadge(c) {
+        return 'badge-cat-' + (c || 'guidance');
+    }
+
+    function applySearch() {
+        const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+        state.searchQuery = q;
+        renderTrending();
+        renderNews();
+        if (state.tab === 'papers')
+            renderPapers();
+    }
+
+    function exportCSV() {
+        const rows = [['Typ', 'Kategorie', 'Titel', 'Quelle', 'URL', 'Datum']];
+        // News
+        state.news.forEach(n => {
+            rows.push(['News', CATS[n.category]?.label || n.category, '"' + n.title.replace(/"/g, '""') + '"', n.source, n.sourceUrl, n.date.toLocaleDateString('de-DE')]);
+        });
+        // Papers
+        PAPERS.forEach(p => {
+            rows.push(['Paper', p.type, '"' + p.title.replace(/"/g, '""') + '"', p.org, p.url, p.year]);
+        });
+        // Conferences
+        CONF.forEach(c => {
+            rows.push(['Konferenz', c.organizer, '"' + c.title.replace(/"/g, '""') + '"', c.location, c.url, c.endDate]);
+        });
+        const csv = '\uFEFF' + rows.map(r => r.join(';')).join('\n');
+        const blob = new Blob([csv], {
+            type: 'text/csv;charset=utf-8'
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'aml-dashboard-export-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function renderStats() {
+        const el = document.getElementById('statsRow'),
+            t = state.news.length,
+            c = {};
+        state.news.forEach(n => {
+            c[n.category] = (c[n.category] || 0) + 1;
+        });
+        const e = c.enforcement || 0,
+            r = state.news.filter(n => (Date.now() - n.date.getTime()) < 864e5).length,
+            sn = c.sanctions || 0;
+        el.innerHTML = `<div class="stat-card fade" style="animation-delay:.05s"><div class="stat-icon" style="background:var(--bg-page)">📊</div><div><div class="stat-value">${t}</div><div class="stat-label">Meldungen</div></div></div>
+<div class="stat-card fade" style="animation-delay:.08s"><div class="stat-icon" style="background:var(--accent-teal-soft)">⚖</div><div><div class="stat-value" style="color:var(--accent-teal)">${e}</div><div class="stat-label">Enforcement</div></div></div>
+<div class="stat-card fade" style="animation-delay:.11s"><div class="stat-icon" style="background:var(--accent-rose-soft,#FDF2F8)">🚫</div><div><div class="stat-value" style="color:var(--accent-rose)">${sn}</div><div class="stat-label">Sanctions</div></div></div>
+<div class="stat-card fade" style="animation-delay:.14s"><div class="stat-icon" style="background:var(--accent-red-soft)">🔴</div><div><div class="stat-value" style="color:var(--accent-red)">${r}</div><div class="stat-label">Letzte 24h</div></div></div>`;
+    }
+
+    function renderFilters() {
+        const el = document.getElementById('filterRow'),
+            c = {
+                all: state.news.length
+            };
+        state.news.forEach(n => {
+            c[n.category] = (c[n.category] || 0) + 1;
+        });
+        let h = `<button class="filter-chip f-all ${state.filter === 'all' ? 'active' : ''}" onclick="setFilter('all')">Alle <span class="cnt">${c.all}</span></button>`;
+        Object.entries(CATS).forEach(([k, v]) => {
+            h += `<button class="filter-chip f-${k} ${state.filter === k ? 'active' : ''}" onclick="setFilter('${k}')">${v.label} <span class="cnt">${c[k] || 0}</span></button>`;
+        });
+        el.innerHTML = h;
+        document.getElementById('navAmla').textContent = c.amla || 0;
+        document.getElementById('navGwg').textContent = c.gwg || 0;
+        document.getElementById('navRegulation').textContent = c.regulation || 0;
+        document.getElementById('navEnforcement').textContent = c.enforcement || 0;
+        document.getElementById('navKi').textContent = c['ki-tools'] || 0;
+        document.getElementById('navGuidance').textContent = c.guidance || 0;
+        document.getElementById('navSanctions').textContent = c.sanctions || 0;
+    }
+
+    function renderTrending() {
+        const el = document.getElementById('trendingGrid');
+        let items = state.news.filter(n => n.trending);
+        if (state.filter !== 'all')
+            items = items.filter(n => n.category === state.filter);
+        if (state.searchQuery)
+            items = items.filter(n => (n.title + ' ' + n.excerpt + ' ' + n.source).toLowerCase().includes(state.searchQuery));
+        document.getElementById('trendingCount').textContent = items.length + ' Trending';
+        if (!items.length) {
+            el.innerHTML = '';
+            return;
+        }
+        el.innerHTML = items.slice(0, 2).map((n, i) => `<article class="featured-card fade" style="animation-delay:${.1 + i * .06}s" onclick="openDetail(${n.id})">
+<div class="featured-thumb"><div class="featured-thumb-bg" style="background:${GRAD[n.category] || GRAD.guidance}"></div></div>
+<div class="featured-body"><div class="featured-meta"><span class="badge badge-trending">Trending</span><span class="badge ${catBadge(n.category)}">${CATS[n.category]?.label || n.category}</span></div>
+<h3 class="featured-title">${n.title}</h3><p class="featured-excerpt">${n.excerpt}</p>
+<div class="card-footer"><a class="card-source-link" href="${n.sourceUrl || '#'}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${n.source} ↗</a><span class="card-time">${timeAgo(n.date)}</span></div></div></article>`).join('');
+    }
+
+    function renderNews() {
+        const el = document.getElementById('newsList'),
+            emp = document.getElementById('emptyState');
+        let items = state.news.filter(n => !n.trending);
+        if (state.filter !== 'all')
+            items = state.news.filter(n => n.category === state.filter && !n.trending);
+        if (state.searchQuery) {
+            items = items.filter(n => (n.title + ' ' + n.excerpt + ' ' + n.source).toLowerCase().includes(state.searchQuery));
+        }
+        const tf = state.news.filter(n => n.trending && (state.filter === 'all' || n.category === state.filter));
+        document.getElementById('allCount').textContent = items.length + ' Meldungen';
+        if (!items.length && !tf.length) {
+            el.innerHTML = '';
+            emp.style.display = 'block';
+            return;
+        }
+        emp.style.display = 'none';
+        el.innerHTML = items.map((n, i) => `<article class="news-row fade" style="animation-delay:${.12 + i * .03}s" onclick="openDetail(${n.id})">
+<div class="news-row-accent" style="background:${
+        CATS[n.category]?.color || '#999'}"></div>
+<div class="news-row-content"><div class="news-row-meta"><span class="badge ${catBadge(n.category)}" style="font-size:10px;padding:2px 8px">${CATS[n.category]?.label || n.category}</span></div>
+<div class="news-row-title">${n.title}</div><div class="news-row-excerpt">${n.excerpt}</div></div>
+<div class="news-row-right"><a class="card-source-link" href="${n.sourceUrl || '#'}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${n.source} ↗</a><span class="card-time">${timeAgo(n.date)}</span></div></article>`).join('');
+    }
+
+    function renderConf() {
+        const up = CONF.filter(c => c.upcoming).sort((a, b) => a.date - b.date),
+            pa = CONF.filter(c => !c.upcoming).sort((a, b) => b.date - a.date);
+        document.getElementById('eventCount').textContent = up.length;
+        const rc = arr => arr.map(c => {
+            const d = c.date;
+            return `<a class="conf-card fade" href="${c.url}" target="_blank" rel="noopener"><div class="conf-date-block"><div class="conf-day">${d.getDate()}</div><div class="conf-month">${MO[d.getMonth()]}</div><div class="conf-year">${d.getFullYear()}</div></div>
+<div class="conf-info"><div class="conf-title">${c.title}</div><div class="conf-details"><strong>${c.endDate}</strong> · ${c.location}<br>${c.organizer} · ${c.price}<br>${c.description.length > 150 ? c.description.slice(0, 150) + '…' : c.description}</div><span class="conf-link">Details & Anmeldung →</span></div></a>`;
+        }).join('');
+        document.getElementById('confGrid').innerHTML = rc(up);
+        document.getElementById('confPastGrid').innerHTML = rc(pa);
+    }
+
+    function renderAll() {
+        renderStats();
+        renderFilters();
+        renderTrending();
+        renderNews();
+        renderConf();
+        document.getElementById('lastUpdate').textContent = 'Aktualisiert: ' + new Date().toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function setFilter(f) {
+        state.filter = f;
+        localStorage.setItem('aml_fil', f);
+        renderFilters();
+        renderTrending();
+        renderNews();
+    }
+    function switchTab(tab) {
+        state.tab = tab;
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        const panelMap = {
+            news: 'panelNews',
+            events: 'panelEvents',
+            terms: 'panelTerms',
+            papers: 'panelPapers'
+        };
+        document.getElementById(panelMap[tab] || 'panelNews').classList.add('active');
+        const titles = {
+            news: 'News Dashboard',
+            events: 'Fachtagungen & Konferenzen',
+            terms: 'Search Terms',
+            papers: 'Papers, Studien & PDFs'
+        };
+        const subs = {
+            news: 'Europäische AML/CFT-Regulierung · Banken & Versicherer',
+            events: 'AML/CFT-Veranstaltungen in Europa',
+            terms: 'Keywords für AML/KYC/Sanctions Monitoring',
+            papers: 'Studien, Whitepapers und Reports zu AML/CFT/Sanctions'
+        };
+        document.getElementById('pageTitle').textContent = titles[tab] || '';
+        document.getElementById('pageSub').textContent = subs[tab] || '';
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => el.classList.remove('active'));
+        if (tab === 'terms')
+            renderTerms();
+        if (tab === 'papers')
+            renderPapers();
+    }
+
+    // ═══ CURATED PAPERS & PDFs ═══
+    const PAPERS = [// 2026
+    {
+        title: 'AMLA: Consultation Paper — Draft RTS on Customer Due Diligence',
+        org: 'AMLA',
+        type: 'Consultation / RTS',
+        year: '2026',
+        url: 'https://www.amla.europa.eu/policy/public-consultations/consultation-draft-rts-customer-due-diligence_en',
+        tags: ['AMLA', 'CDD', 'RTS']
+    },
+    {
+        title: 'AMLA: Consultation Paper — Draft RTS on Business Relationships & Linked Transactions',
+        org: 'AMLA',
+        type: 'Consultation / RTS',
+        year: '2026',
+        url: 'https://www.amla.europa.eu/policy/public-consultations/consultation-draft-rts-criteria-identifying-business-relationships-occasional-and-linked_en',
+        tags: ['AMLA', 'Business Relationships', 'RTS']
+    },
+    {
+        title: 'AMLA: Consultation Paper — Draft RTS on Pecuniary Sanctions & Administrative Measures',
+        org: 'AMLA',
+        type: 'Consultation / RTS',
+        year: '2026',
+        url: 'https://www.amla.europa.eu/policy/public-consultations/consultation-draft-rts-pecuniary-sanctions-administrative-measures-and-periodic-penalty-payments_en',
+        tags: ['AMLA', 'Enforcement', 'RTS']
+    },
+    {
+        title: 'AMLA: Final Report — Draft RTS on Inherent Risk Profiles (Financial Sector)',
+        org: 'AMLA',
+        type: 'Final Report / RTS',
+        year: '2026',
+        url: 'https://www.amla.europa.eu/document/download/c8782141-45bf-4ef9-9d66-33e2f90e607e_en?filename=1.1_20251216_FINAL+REPORT+RTS+40(2)+AMLD+financial+only_Final.pdf',
+        tags: ['AMLA', 'Risk Profiles', 'PDF']
+    },
+    {
+        title: 'AMLA: Work Programme 2025–2026',
+        org: 'AMLA',
+        type: 'Work Programme',
+        year: '2026',
+        url: 'https://www.amla.europa.eu/document/download/b78bee2f-16b9-4742-a3a1-23e7aad394ab_en?filename=AMLA_Work_Programme_July+2025_0.pdf',
+        tags: ['AMLA', 'Work Programme', 'PDF']
+    },
+    {
+        title: 'AMLA: Regulatory Instruments — Overview & Mandate Tracker',
+        org: 'AMLA',
+        type: 'Overview',
+        year: '2026',
+        url: 'https://www.amla.europa.eu/policy/regulatory-instruments_en',
+        tags: ['AMLA', 'RTS', 'ITS', 'Guidelines']
+    }, // 2025
+    {
+        title: 'FATF: Targeted Update — Virtual Assets & VASPs Implementation',
+        org: 'FATF',
+        type: 'Report',
+        year: '2025',
+        url: 'https://www.fatf-gafi.org/en/publications/Virtualassets/targeted-update-implementation-fatf-standards-virtual-assets-vasps-2025.html',
+        tags: ['FATF', 'Virtual Assets', 'VASP']
+    },
+    {
+        title: 'FATF: Outcomes Plenary October 2025 (incl. Belgium & Malaysia MER)',
+        org: 'FATF',
+        type: 'Plenary Outcomes',
+        year: '2025',
+        url: 'https://www.fatf-gafi.org/en/publications/Fatfgeneral/outcomes-FATF-plenary-october-2025.html',
+        tags: ['FATF', 'Plenary', 'MER']
+    },
+    {
+        title: 'FATF: Germany — Follow-up Report on Technical Compliance',
+        org: 'FATF',
+        type: 'Follow-up Report',
+        year: '2025',
+        url: 'https://www.fatf-gafi.org/en/publications/Mutualevaluations/germany-fur-2023.html',
+        tags: ['FATF', 'Deutschland', 'Compliance']
+    },
+    {
+        title: 'FATF Recommendations (zuletzt aktualisiert Okt 2025)',
+        org: 'FATF',
+        type: 'Standards',
+        year: '2025',
+        url: 'https://www.fatf-gafi.org/en/publications/Fatfrecommendations/Fatf-recommendations.html',
+        tags: ['FATF', '40 Recommendations', 'Standards']
+    },
+    {
+        title: 'EBA: News & Press (aktueller RSS-Feed)',
+        org: 'EBA',
+        type: 'News Feed',
+        year: '2025',
+        url: 'https://www.eba.europa.eu/news-press',
+        tags: ['EBA', 'News', 'AML/CFT']
+    },
+    {
+        title: 'Europol: EU-SOCTA 2025 — The Changing DNA of Serious and Organised Crime',
+        org: 'Europol',
+        type: 'Threat Assessment',
+        year: '2025',
+        url: 'https://www.europol.europa.eu/publication-events/main-reports/changing-dna-of-serious-and-organised-crime',
+        tags: ['Europol', 'SOCTA', 'Organised Crime']
+    },
+    {
+        title: 'Basel Institute: Basel AML Index — Country Risk Ranking',
+        org: 'Basel Institute',
+        type: 'Index',
+        year: '2025',
+        url: 'https://index.baselgovernance.org/',
+        tags: ['Basel', 'AML Index', 'Country Risk']
+    },
+    {
+        title: 'Transparency International: Corruption Perceptions Index 2024',
+        org: 'Transparency International',
+        type: 'Index',
+        year: '2025',
+        url: 'https://www.transparency.org/en/cpi/2024',
+        tags: ['TI', 'Corruption', 'Index']
+    }, // 2024
+    {
+        title: 'EU-Kommission: Supranational Risk Assessment (SNRA) — ML/TF',
+        org: 'EU-Kommission',
+        type: 'Risk Assessment',
+        year: '2024',
+        url: 'https://finance.ec.europa.eu/financial-crime/supranational-risk-assessment_en',
+        tags: ['EU', 'SNRA', 'Risk Assessment']
+    },
+    {
+        title: 'BaFin: Auslegungs- und Anwendungshinweise zum GwG (AuA)',
+        org: 'BaFin',
+        type: 'Guidance',
+        year: '2024',
+        url: 'https://www.bafin.de/DE/Aufsicht/Geldwaeschepraevention/AuA/aua_node.html',
+        tags: ['BaFin', 'GwG', 'AuA']
+    },
+    {
+        title: 'PwC: Global Economic Crime Survey 2024 (PDF)',
+        org: 'PwC',
+        type: 'Survey',
+        year: '2024',
+        url: 'https://www.pwc.com/gx/en/services/forensics/gecs/2024-global-economic-crime-survey.pdf',
+        tags: ['PwC', 'Financial Crime', 'PDF']
+    },
+    {
+        title: 'EY: Global Integrity Report 2024',
+        org: 'EY',
+        type: 'Report',
+        year: '2024',
+        url: 'https://www.ey.com/en_gl/insights/forensic-integrity-services/global-integrity-report',
+        tags: ['EY', 'Integrity', 'Compliance']
+    },
+    {
+        title: 'Wolfsberg Group: Correspondent Banking Due Diligence Questionnaire (CBDDQ)',
+        org: 'Wolfsberg Group',
+        type: 'Guidance',
+        year: '2024',
+        url: 'https://www.wolfsberg-principles.com/publications',
+        tags: ['Wolfsberg', 'Correspondent Banking', 'CDD']
+    },
+    {
+        title: 'EIOPA: Anti-Money Laundering — Insurance Sector Resources',
+        org: 'EIOPA',
+        type: 'Guidance',
+        year: '2024',
+        url: 'https://www.eiopa.europa.eu/browse/anti-money-laundering_en',
+        tags: ['EIOPA', 'Insurance', 'AML']
+    },
+    ];
+
+    let paperYearFilter = 'all';
+
+    function renderPapers() {
+        const el = document.getElementById('papersGrid');
+        const years = [...new Set(PAPERS.map(p => p.year))].sort((a, b) => b - a);
+        const tagColors = {
+            'FATF': 'var(--accent-amber)',
+            'EBA': 'var(--accent-purple)',
+            'BaFin': 'var(--accent-red)',
+            'AMLA': 'var(--accent-red)',
+            'Deloitte': 'var(--accent-teal)',
+            'PwC': 'var(--accent-teal)',
+            'EY': 'var(--accent-teal)',
+            'KPMG': 'var(--accent-teal)',
+            'EU': 'var(--accent-blue)',
+            'Europol': 'var(--accent-blue)',
+            'EIOPA': 'var(--accent-purple)',
+            'TI': 'var(--accent-amber)',
+            'Basel': 'var(--accent-amber)',
+            'Wolfsberg': 'var(--accent-purple)'
+        };
+
+        // Year filter chips
+        let filterHtml = `<div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+<button class="filter-chip ${paperYearFilter === 'all' ? 'active f-all' : ''}" onclick="paperYearFilter='all';renderPapers()">Alle <span class="cnt">${PAPERS.length}</span></button>`;
+        years.forEach(y => {
+            const c = PAPERS.filter(p => p.year === y).length;
+            filterHtml += `<button class="filter-chip ${paperYearFilter === y ? 'active f-all' : ''}" onclick="paperYearFilter='${y}';renderPapers()">${y} <span class="cnt">${c}</span></button>`;
+        });
+        filterHtml += '</div>';
+
+        let filtered = paperYearFilter === 'all' ? [...PAPERS] : PAPERS.filter(p => p.year === paperYearFilter);
+        if (state.searchQuery) {
+            filtered = filtered.filter(p => (p.title + ' ' + p.org + ' ' + p.type + ' ' + p.tags.join(' ')).toLowerCase().includes(state.searchQuery));
+        }
+
+        el.innerHTML = filterHtml + filtered.map((p, i) => `<a class="news-row fade" style="animation-delay:${.05 + i * .025}s;text-decoration:none;color:inherit" href="${p.url}" target="_blank" rel="noopener">
+<div class="news-row-accent" style="background:${tagColors[p.tags[0]] || 'var(--accent-blue)'}"></div>
+<div class="news-row-content">
+<div class="news-row-meta"><span class="badge" style="background:${
+        tagColors[p.tags[0]] || 'var(--accent-blue)'}15;color:${tagColors[p.tags[0]] || 'var(--accent-blue)'};font-size:10px;padding:2px 8px">${p.type}</span><span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono)">${p.year}</span></div>
+<div class="news-row-title">${p.title}</div>
+<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">${p.tags.map(t => `<span style="font-size:10px;font-family:var(--font-mono);background:var(--bg-page);border:1px solid var(--border-light);padding:1px 7px;border-radius:4px;color:var(--text-muted)">${t}</span>`).join('')}</div>
+</div>
+<div class="news-row-right"><span class="card-source-link">${
+        p.org} ↗</span></div>
+</a>`
+        ).join('');
+
+        // Also load live papers from Google News
+        loadLivePapers();
+    }
+
+    async function loadLivePapers() {
+        const el = document.getElementById('livePapersGrid');
+        el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:20px 0">Lade aktuelle Papers & Reports…</div>';
+        const papers = [];
+        async function fetchPaperFeed(url, src, max=8) {
+            try {
+                const r = await fetch('/api/rss?url=' + encodeURIComponent(url), {});
+                if (!r.ok)
+                    return;
+                const txt = await r.text();
+                if (!txt || txt.length < 100)
+                    return;
+                if (txt.trim().toLowerCase().startsWith('<!doctype') || txt.trim().toLowerCase().startsWith('<html'))
+                    return;
+                const xml = new DOMParser().parseFromString(txt, 'text/xml');
+                if (xml.querySelector('parsererror'))
+                    return;
+                let items = xml.querySelectorAll('item');
+                if (!items.length)
+                    items = xml.querySelectorAll('entry');
+                let c = 0;
+                items.forEach(item => {
+                    if (c >= max)
+                        return;
+                    const t = (item.querySelector('title')?.textContent || '').replace(/ - [^-]+$/, '').trim();
+                    const link = item.querySelector('link')?.textContent || item.querySelector('link')?.getAttribute('href') || '';
+                    const pubDate = (item.querySelector('pubDate') || item.querySelector('published'))?.textContent || '';
+                    const s = item.querySelector('source')?.textContent || src;
+                    if (t) {
+                        papers.push({
+                            title: t,
+                            url: link,
+                            source: s,
+                            date: pubDate
+                        });
+                        c++;
+                    }
+                });
+            } catch (e) {}
+        }
+
+        await Promise.allSettled([
+        fetchPaperFeed('https://news.google.com/rss/search?q=' + encodeURIComponent('(Deloitte OR PwC OR EY OR KPMG OR FATF) ("AML report" OR "money laundering study" OR "financial crime report") filetype:pdf') + '&hl=en&gl=DE&ceid=DE:en', 'Big4 Reports'),
+        fetchPaperFeed('https://news.google.com/rss/search?q=' + encodeURIComponent('"anti money laundering" (report OR study OR whitepaper OR publication) bank Europe') + '&hl=en&gl=DE&ceid=DE:en', 'AML Studies'),
+        fetchPaperFeed('https://news.google.com/rss/search?q=' + encodeURIComponent('EBA OR AMLA OR BaFin (guidelines OR "technical standards" OR consultation OR report) AML') + '&hl=en&gl=DE&ceid=DE:en', 'Regulator Papers'),
+        ]);
+
+        const seen = new Set();
+        const uniq = papers.filter(p => {
+            if (seen.has(p.title))
+                return false;
+            seen.add(p.title);
+            return true;
+        });
+        uniq.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+        if (!uniq.length) {
+            el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:20px 0">Keine aktuellen Papers gefunden. Versuche es später erneut.</div>';
+            return;
+        }
+        el.innerHTML = uniq.slice(0, 15).map((p, i) => `<a class="news-row fade" style="animation-delay:${.05 + i * .03}s;text-decoration:none;color:inherit" href="${p.url}" target="_blank" rel="noopener">
+<div class="news-row-accent" style="background:var(--accent-amber)"></div>
+<div class="news-row-content"><div class="news-row-title">${
+        p.title}</div></div>
+<div class="news-row-right"><span class="card-source-link">${p.source} ↗</span><span class="card-time">${p.date ? timeAgo(new Date(p.date)) : ''}</span></div>
+</a>`
+        ).join('');
+    }
+
+    async function checkAllLinks() {
+        const btn = document.getElementById('checkLinksBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ Prüfe Links…';
+        btn.style.color = 'var(--accent-amber)';
+        const results = [];
+        const urls = PAPERS.map(p => p.url);
+        const batchSize = 5;
+        for (let i = 0; i < urls.length; i += batchSize) {
+            const batch = urls.slice(i, i + batchSize);
+            const batchResults = await Promise.allSettled(batch.map(async u => {
+                try {
+                    const ctrl = new AbortController();
+                    const timer = setTimeout(() => ctrl.abort(), 12000);
+                    const r = await fetch('/api/check-link?url=' + encodeURIComponent(u), {
+                        signal: ctrl.signal
+                    });
+                    clearTimeout(timer);
+                    const d = await r.json();
+                    return d;
+                } catch (e) {
+                    return {
+                        url: u,
+                        ok: false,
+                        error: e.message
+                    };
+                }
+            }));
+            batchResults.forEach(r => {
+                if (r.status === 'fulfilled')
+                    results.push(r.value);
+                else
+                    results.push({
+                        url: '',
+                        ok: false,
+                        error: 'failed'
+                    });
+            });
+            btn.textContent = '⏳ Prüfe… ' + (Math.min(i + batchSize, urls.length)) + '/' + urls.length;
+        }
+
+        const broken = results.filter(r => !r.ok);
+        const ok = results.filter(r => r.ok);
+
+        // Mark links in the DOM
+        document.querySelectorAll('#papersGrid a.news-row').forEach(row => {
+            const href = row.getAttribute('href');
+            if (!href)
+                return;
+            const result = results.find(r => r.url === href);
+            if (!result)
+                return;
+            const accent = row.querySelector('.news-row-accent');
+            const right = row.querySelector('.news-row-right');
+            // Remove old status
+            row.querySelectorAll('.link-status').forEach(el => el.remove());
+            if (result.ok) {
+                right.insertAdjacentHTML('afterbegin', '<span class="link-status" style="font-size:11px;color:var(--accent-teal);font-weight:600;white-space:nowrap">✓ OK</span>');
+            } else {
+                if (accent)
+                    accent.style.background = '#EF4444';
+                const errMsg = result.error || (result.status ? 'HTTP ' + result.status : 'Fehler');
+                right.insertAdjacentHTML('afterbegin', '<span class="link-status" style="font-size:11px;color:#EF4444;font-weight:600;white-space:nowrap">✗ ' + errMsg + '</span>');
+            }
+        });
+
+        btn.disabled = false;
+        if (broken.length === 0) {
+            btn.textContent = '✓ Alle ' + ok.length + ' Links OK';
+            btn.style.color = 'var(--accent-teal)';
+        }
+        else {
+            btn.textContent = '⚠ ' + broken.length + ' von ' + results.length + ' fehlerhaft';
+            btn.style.color = '#EF4444';
+        }
+        setTimeout(() => {
+            btn.textContent = '🔗 Links prüfen';
+            btn.style.color = 'var(--text-secondary)';
+        }, 15000);
+        console.log('Link-Check: ' + ok.length + ' OK, ' + broken.length + ' fehlerhaft');
+        if (broken.length)
+            console.table(broken);
+    }
+
+    function renderTerms() {
+        const el = document.getElementById('searchTermsGrid');
+        const colors = ['var(--accent-red)', 'var(--accent-amber)', 'var(--accent-teal)', 'var(--accent-blue)', 'var(--accent-purple)', 'var(--accent-rose)', 'var(--accent-red)', 'var(--accent-amber)', 'var(--accent-teal)', 'var(--accent-blue)'];
+        el.innerHTML = Object.entries(SEARCH_TERMS).map(([cat, terms], i) => `<div class="fade" style="background:var(--bg-white);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:18px 20px;animation-delay:${.05 + i * .04}s">
+<div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:${colors[i] || '#999'}"></div>${cat}</div>
+<div style="display:flex;flex-wrap:wrap;gap:5px">${terms.map(t => `<span style="font-size:11px;font-family:var(--font-mono);background:var(--bg-page);border:1px solid var(--border-light);padding:3px 9px;border-radius:5px;color:var(--text-secondary)">${t}</span>`).join('')}</div></div>`).join('');
+    }
+
+    function switchSource() {}
+    function closeApiModal() {}
+    function saveApiKey() {}
+
+    async function refreshNews() {
+        const btn = document.getElementById('refreshBtn');
+        btn.classList.add('spinning');
+        setTimeout(() => btn.classList.remove('spinning'), 3000);
+        document.getElementById('lastUpdate').textContent = 'Lade News…';
+        const all = [];
+
+        // Generic RSS fetcher — supports RSS <item> and Atom <entry>
+        async function fetchRSS(url, srcFallback, maxItems=10) {
+            try {
+                const r = await fetch('/api/rss?url=' + encodeURIComponent(url), {});
+                if (!r.ok) {
+                    console.warn('Proxy HTTP ' + r.status + ' for', srcFallback);
+                    return;
+                }
+                const txt = await r.text();
+                if (!txt || txt.length < 100) {
+                    console.warn('Empty/short response for', srcFallback, '(' + txt.length + ' bytes)');
+                    return;
+                }
+                // Check if response is HTML instead of XML (redirect/error page)
+                if (txt.trim().toLowerCase().startsWith('<!doctype') || txt.trim().toLowerCase().startsWith('<html')) {
+                    console.warn('Got HTML instead of XML for', srcFallback);
+                    return;
+                }
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(txt, 'text/xml');
+                if (xml.querySelector('parsererror')) {
+                    console.warn('XML parse error for', srcFallback);
+                    return;
+                }
+                let items = xml.querySelectorAll('item');
+                let isAtom = false;
+                if (!items.length) {
+                    items = xml.querySelectorAll('entry');
+                    isAtom = true;
+                }
+                if (!items.length) {
+                    console.warn('No items in', srcFallback);
+                    return;
+                }
+                let count = 0;
+                items.forEach(item => {
+                    if (count >= maxItems)
+                        return;
+                    const t = (item.querySelector('title')?.textContent || '').replace(/ - [^-]+$/, '').trim();
+                    const link = isAtom ? (item.querySelector('link')?.getAttribute('href') || '') : (item.querySelector('link')?.textContent || '');
+                    const pubDate = (item.querySelector('pubDate') || item.querySelector('published') || item.querySelector('updated'))?.textContent || '';
+                    const src = item.querySelector('source')?.textContent || srcFallback || 'News';
+                    const descEl = item.querySelector('description') || item.querySelector('summary') || item.querySelector('content');
+                    const desc = (descEl?.textContent || '').replace(/<[^>]*>/g, '').slice(0, 400);
+                    if (t) {
+                        all.push({
+                            title: t,
+                            url: link || '#',
+                            source: src,
+                            date: pubDate,
+                            desc: desc || t
+                        });
+                        count++;
+                    }
+                });
+                console.log('✓ ' + srcFallback + ': ' + count + ' Artikel');
+            } catch (e) {
+                console.error('✗ ' + srcFallback + ':', e.message);
+            }
+        }
+
+        // All Google News RSS — most reliable, no broken direct feeds
+        await Promise.allSettled([
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('site:bafin.de Geldwäsche OR Sanktion OR Bußgeld') + '&hl=de&gl=DE&ceid=DE:de', 'BaFin', 10),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('site:eba.europa.eu AML OR money laundering OR guidelines') + '&hl=en&gl=DE&ceid=DE:en', 'EBA', 10),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('Geldwäsche OR "anti money laundering" OR AMLA OR "AML fine" OR KYC Bank') + '&hl=de&gl=DE&ceid=DE:de', 'AML News DE', 15),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('"EU sanctions" bank OR "terrorism financing" OR "money laundering" penalty') + '&hl=en&gl=DE&ceid=DE:en', 'Sanctions/CFT', 15),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('(Deloitte OR PwC OR EY OR KPMG) ("money laundering" OR "financial crime" OR AML)') + '&hl=en&gl=DE&ceid=DE:en', 'Big4 / FATF', 10),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('EIOPA OR "insurance money laundering" OR "Versicherung Geldwäsche"') + '&hl=de&gl=DE&ceid=DE:de', 'Insurance / EIOPA', 8),
+        ]);
+
+        // Deduplicate & sort
+        const seen = new Set();
+        const u = all.filter(a => {
+            if (!a.title || seen.has(a.title))
+                return false;
+            seen.add(a.title);
+            return true;
+        });
+        u.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+        state.news = u.slice(0, 40).map((a, i) => ({
+            id: 3e3 + i,
+            category: autoCat(a.title + ' ' + (a.desc || '')),
+            trending: i < 4,
+            title: a.title,
+            excerpt: a.desc || '',
+            body: a.desc || '',
+            source: a.source,
+            sourceUrl: a.url || '#',
+            date: new Date(a.date || Date.now()),
+        }));
+
+        if (state.news.length === 0) {
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('emptyState').querySelector('h3').textContent = 'Keine News geladen';
+            document.getElementById('emptyState').querySelector('p').textContent = 'CORS-Proxies nicht erreichbar. Öffne die Browser-Konsole (F12) für Details, oder versuche es später erneut.';
+        } else {
+            document.getElementById('emptyState').style.display = 'none';
+        }
+        renderAll();
+        console.log('AML Dashboard: ' + state.news.length + ' Artikel geladen aus ' + all.length + ' Roheinträgen');
+    }
+
+    function autoCat(t) {
+        const l = t.toLowerCase();
+        if (/amla|anti-money laundering authority/.test(l))
+            return 'amla';
+        if (/gwg|geldwäsche.?gesetz|transparenzregister/.test(l))
+            return 'gwg';
+        if (/sanktion|sanctions|embargo|terrorist|terrorismus|cfт|counter.?terror|asset.?freeze|restrictive measures|ofac/.test(l))
+            return 'sanctions';
+        if (/bußgeld|fine|penalty|enforcement|strafe/.test(l))
+            return 'enforcement';
+        if (/\bki\b|künstliche intelligenz|machine learning|regtech|neural|ai.?tool/.test(l))
+            return 'ki-tools';
+        // Official regulation: RTS, ITS, directives, regulations, Verordnung, Rundschreiben, delegated acts
+        if (/\brts\b|regulatory technical standard|implementing technical standard|\bits\b|directive|verordnung|rundschreiben|delegated act|richtlinie|regulierung|regulation .?\d{4}|amld.?\d|amlr\b|6\.\s*geldwäsche|eu.?paket|single rulebook|\beba\b.*(?:final|draft|standard|guidelines)|bafin.*(?:rundschreiben|anordnung|allgemeinverfügung)|eiopa.*(?:standard|opinion|regulation)|amla.*(?:rts|standard|consultation|draft)/.test(l))
+            return 'regulation';
+        return 'guidance';
+    }
+
+    function openDetail(id) {
+        const n = state.news.find(x => x.id === id);
+        if (!n)
+            return;
+        const p = document.getElementById('detailPanel');
+        const bH = (n.body || n.excerpt).split('\n').filter(x => x.trim()).map(x => `<p>${x}</p>`).join('');
+        p.innerHTML = `<button class="detail-close" onclick="document.getElementById('detailOverlay').classList.remove('open')">✕</button>
+<span class="badge ${catBadge(n.category)}">${CATS[n.category]?.label || n.category}</span>
+<h2>${n.title}</h2><div class="detail-meta"><span>${n.source}</span><span>${timeAgo(n.date)}</span><a href="${n.sourceUrl || '#'}" target="_blank" rel="noopener">Quelle öffnen ↗</a></div><div class="detail-body">${bH}</div>`;
+        document.getElementById('detailOverlay').classList.add('open');
+    }
+    function closeDetail(e) {
+        if (e.target === e.currentTarget)
+            document.getElementById('detailOverlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.getElementById('detailOverlay').classList.remove('open');
+            closeApiModal();
+        }
+    });
+
+    (function() {
+        state.news = [];
+        renderAll();
+        refreshNews();
+    })();
+    </script>
+</body>
+</html>
