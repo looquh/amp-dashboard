@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/rss", "destination": "/api/rss" },
+    { "source": "/api/check-link", "destination": "/api/check-link" }
+  ]
+}
