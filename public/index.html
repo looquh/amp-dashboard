@@ -1209,7 +1209,7 @@
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                Enforcement
+                Maßnahmen & Bußgelder
                 <span class="nav-badge" id="navEnforcement">0</span>
             </a>
             <a class="nav-item" onclick="setFilter('ki-tools')">
@@ -1297,22 +1297,48 @@
             <div class="content">
                 <section class="stats-row" id="statsRow"></section>
                 <section class="filter-row" id="filterRow"></section>
-                <div class="section-head">
-                    <div class="section-label">
-                        <div class="dot" style="background:var(--accent-amber)"></div>
-                        Trending
+
+                <!-- Grouped news sections -->
+                <div id="groupedNews">
+                    <div class="section-head">
+                        <div class="section-label">
+                            <div class="dot" style="background:var(--accent-red)"></div>
+                            Regulatoren & Behörden
+                        </div>
+                        <div class="section-count" id="countRegulator"></div>
                     </div>
-                    <div class="section-count" id="trendingCount"></div>
-                </div>
-                <section class="trending-grid" id="trendingGrid"></section>
-                <div class="section-head">
-                    <div class="section-label">
-                        <div class="dot" style="background:var(--text-muted)"></div>
-                        Alle Meldungen
+                    <p style="font-size:11px;color:var(--text-muted);margin:-10px 0 12px 16px">AMLA · BaFin · EBA · EIOPA · FATF · EU-Kommission · Europol</p>
+                    <section class="news-list" id="newsRegulator"></section>
+
+                    <div class="section-head">
+                        <div class="section-label">
+                            <div class="dot" style="background:var(--accent-teal)"></div>
+                            Maßnahmen & Bußgelder
+                        </div>
+                        <div class="section-count" id="countEnforcement"></div>
                     </div>
-                    <div class="section-count" id="allCount"></div>
+                    <section class="news-list" id="newsEnforcement"></section>
+
+                    <div class="section-head">
+                        <div class="section-label">
+                            <div class="dot" style="background:var(--accent-amber)"></div>
+                            Medien & Markt
+                        </div>
+                        <div class="section-count" id="countMedia"></div>
+                    </div>
+                    <p style="font-size:11px;color:var(--text-muted);margin:-10px 0 12px 16px">Handelsblatt · Reuters · Tagesschau · Finextra · Compliance-Fachmedien u.a.</p>
+                    <section class="news-list" id="newsMedia"></section>
+
+                    <div class="section-head">
+                        <div class="section-label">
+                            <div class="dot" style="background:var(--accent-blue)"></div>
+                            KI, Crypto & RegTech
+                        </div>
+                        <div class="section-count" id="countTech"></div>
+                    </div>
+                    <section class="news-list" id="newsTech"></section>
                 </div>
-                <section class="news-list" id="newsList"></section>
+
                 <div class="empty-state" id="emptyState" style="display:none">
                     <h3>Keine Meldungen geladen</h3>
                     <p>Klicke auf den Refresh-Button oder wechsle die Datenquelle.</p>
@@ -1402,7 +1428,7 @@
             icon: '🏛'
         },
         enforcement: {
-            label: 'Enforcement',
+            label: 'Maßnahmen & Bußgelder',
             color: 'var(--accent-teal)',
             bg: 'var(--accent-teal-soft)',
             icon: '⚖'
@@ -1440,7 +1466,7 @@
     const SEARCH_TERMS = {
         'AMLA & EU-Regulierung': ['AMLA', 'Anti-Money Laundering Authority', 'EU AML Package', 'AMLD6', 'AMLR', 'AMLAR', '6. Geldwäscherichtlinie', 'EU-Geldwäscheverordnung', 'Single Rulebook AML', 'AML/CFT framework EU'],
         'GwG & Deutsches Recht': ['GwG', 'Geldwäschegesetz', 'GwG-Novelle', 'Transparenzregister', 'wirtschaftlich Berechtigter', 'BaFin Geldwäsche', 'FIU Deutschland', 'Verdachtsmeldung', '§ 43 GwG', 'Unstimmigkeitsmeldung', 'KWG § 25h'],
-        'Enforcement & Bußgelder': ['AML fine', 'Bußgeld Geldwäsche', 'enforcement action bank', 'BaFin Bußgeld', 'penalty money laundering', 'settlement AML', 'consent order', 'cease and desist AML', 'compliance monitor bank'],
+        'Maßnahmen & Bußgelder': ['AML fine', 'Bußgeld Geldwäsche', 'enforcement action bank', 'BaFin Bußgeld', 'penalty money laundering', 'settlement AML', 'consent order', 'cease and desist AML', 'compliance monitor bank'],
         'KYC & Customer Due Diligence': ['KYC', 'Know Your Customer', 'Customer Due Diligence', 'CDD', 'Enhanced Due Diligence', 'EDD', 'PEP', 'Politically Exposed Person', 'beneficial owner', 'UBO', 'onboarding compliance', 'identity verification'],
         'Sanctions & Embargo': ['EU sanctions', 'Finanzsanktionen', 'Embargo', 'OFAC', 'sanctions screening', 'sanctions evasion', 'restrictive measures', 'asset freeze', 'EU restrictive measures', 'sanctions compliance bank', 'secondary sanctions', 'SDN list'],
         'Terrorismusfinanzierung (CFT)': ['terrorism financing', 'Terrorismusfinanzierung', 'CFT', 'counter terrorism financing', 'terrorist financing risk', 'FATF Recommendation 5', 'STR terrorism', 'FIU terrorism', 'de-risking', 'correspondent banking CTF'],
@@ -1586,8 +1612,7 @@
     function applySearch() {
         const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
         state.searchQuery = q;
-        renderTrending();
-        renderNews();
+        renderGroupedNews();
         if (state.tab === 'papers')
             renderPapers();
     }
@@ -1629,7 +1654,7 @@
             r = state.news.filter(n => (Date.now() - n.date.getTime()) < 864e5).length,
             sn = c.sanctions || 0;
         el.innerHTML = `<div class="stat-card fade" style="animation-delay:.05s"><div class="stat-icon" style="background:var(--bg-page)">📊</div><div><div class="stat-value">${t}</div><div class="stat-label">Meldungen</div></div></div>
-<div class="stat-card fade" style="animation-delay:.08s"><div class="stat-icon" style="background:var(--accent-teal-soft)">⚖</div><div><div class="stat-value" style="color:var(--accent-teal)">${e}</div><div class="stat-label">Enforcement</div></div></div>
+<div class="stat-card fade" style="animation-delay:.08s"><div class="stat-icon" style="background:var(--accent-teal-soft)">⚖</div><div><div class="stat-value" style="color:var(--accent-teal)">${e}</div><div class="stat-label">Maßnahmen</div></div></div>
 <div class="stat-card fade" style="animation-delay:.11s"><div class="stat-icon" style="background:var(--accent-rose-soft,#FDF2F8)">🚫</div><div><div class="stat-value" style="color:var(--accent-rose)">${sn}</div><div class="stat-label">Sanctions</div></div></div>
 <div class="stat-card fade" style="animation-delay:.14s"><div class="stat-icon" style="background:var(--accent-red-soft)">🔴</div><div><div class="stat-value" style="color:var(--accent-red)">${r}</div><div class="stat-label">Letzte 24h</div></div></div>`;
     }
@@ -1656,48 +1681,69 @@
         document.getElementById('navSanctions').textContent = c.sanctions || 0;
     }
 
-    function renderTrending() {
-        const el = document.getElementById('trendingGrid');
-        let items = state.news.filter(n => n.trending);
-        if (state.filter !== 'all')
-            items = items.filter(n => n.category === state.filter);
-        if (state.searchQuery)
-            items = items.filter(n => (n.title + ' ' + n.excerpt + ' ' + n.source).toLowerCase().includes(state.searchQuery));
-        document.getElementById('trendingCount').textContent = items.length + ' Trending';
-        if (!items.length) {
-            el.innerHTML = '';
-            return;
-        }
-        el.innerHTML = items.slice(0, 2).map((n, i) => `<article class="featured-card fade" style="animation-delay:${.1 + i * .06}s" onclick="openDetail(${n.id})">
-<div class="featured-thumb"><div class="featured-thumb-bg" style="background:${GRAD[n.category] || GRAD.guidance}"></div></div>
-<div class="featured-body"><div class="featured-meta"><span class="badge badge-trending">Trending</span><span class="badge ${catBadge(n.category)}">${CATS[n.category]?.label || n.category}</span></div>
-<h3 class="featured-title">${n.title}</h3><p class="featured-excerpt">${n.excerpt}</p>
-<div class="card-footer"><a class="card-source-link" href="${n.sourceUrl || '#'}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${n.source} ↗</a><span class="card-time">${timeAgo(n.date)}</span></div></div></article>`).join('');
+    // Source classification for grouping
+    const REGULATOR_SOURCES = /bafin|eba\b|amla|eiopa|fatf|europol|eu.?kommission|european commission|bundesbank|fiu|moneyval|wolfsberg|basel institute/i;
+    const ENFORCEMENT_CATS = ['enforcement'];
+    const TECH_CATS = ['ki-tools'];
+
+    function classifyGroup(n) {
+        if (ENFORCEMENT_CATS.includes(n.category))
+            return 'enforcement';
+        if (TECH_CATS.includes(n.category))
+            return 'tech';
+        if (n.category === 'regulation' || n.category === 'amla' || REGULATOR_SOURCES.test(n.source))
+            return 'regulator';
+        return 'media';
     }
 
-    function renderNews() {
-        const el = document.getElementById('newsList'),
-            emp = document.getElementById('emptyState');
-        let items = state.news.filter(n => !n.trending);
-        if (state.filter !== 'all')
-            items = state.news.filter(n => n.category === state.filter && !n.trending);
-        if (state.searchQuery) {
-            items = items.filter(n => (n.title + ' ' + n.excerpt + ' ' + n.source).toLowerCase().includes(state.searchQuery));
-        }
-        const tf = state.news.filter(n => n.trending && (state.filter === 'all' || n.category === state.filter));
-        document.getElementById('allCount').textContent = items.length + ' Meldungen';
-        if (!items.length && !tf.length) {
-            el.innerHTML = '';
-            emp.style.display = 'block';
-            return;
-        }
-        emp.style.display = 'none';
-        el.innerHTML = items.map((n, i) => `<article class="news-row fade" style="animation-delay:${.12 + i * .03}s" onclick="openDetail(${n.id})">
+    function renderNewsRow(n, i) {
+        return `<article class="news-row fade" style="animation-delay:${.05 + i * .025}s" onclick="openDetail(${n.id})">
 <div class="news-row-accent" style="background:${
         CATS[n.category]?.color || '#999'}"></div>
 <div class="news-row-content"><div class="news-row-meta"><span class="badge ${catBadge(n.category)}" style="font-size:10px;padding:2px 8px">${CATS[n.category]?.label || n.category}</span></div>
 <div class="news-row-title">${n.title}</div><div class="news-row-excerpt">${n.excerpt}</div></div>
-<div class="news-row-right"><a class="card-source-link" href="${n.sourceUrl || '#'}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${n.source} ↗</a><span class="card-time">${timeAgo(n.date)}</span></div></article>`).join('');
+<div class="news-row-right"><a class="card-source-link" href="${n.sourceUrl || '#'}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${n.source} ↗</a><span class="card-time">${timeAgo(n.date)}</span></div></article>`;
+    }
+
+    function renderGroupedNews() {
+        let items = [...state.news];
+        if (state.filter !== 'all')
+            items = items.filter(n => n.category === state.filter);
+        if (state.searchQuery)
+            items = items.filter(n => (n.title + ' ' + n.excerpt + ' ' + n.source).toLowerCase().includes(state.searchQuery));
+
+        const groups = {
+            regulator: [],
+            enforcement: [],
+            media: [],
+            tech: []
+        };
+        items.forEach(n => {
+            const g = classifyGroup(n);
+            groups[g].push(n);
+        });
+
+        const emp = document.getElementById('emptyState');
+        if (!items.length) {
+            emp.style.display = 'block';
+            ['newsRegulator', 'newsEnforcement', 'newsMedia', 'newsTech'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+            return;
+        }
+        emp.style.display = 'none';
+
+        document.getElementById('newsRegulator').innerHTML = groups.regulator.map((n, i) => renderNewsRow(n, i)).join('') || '<div style="color:var(--text-muted);font-size:12px;padding:8px 16px">Keine Meldungen in dieser Kategorie</div>';
+        document.getElementById('countRegulator').textContent = groups.regulator.length + ' Meldungen';
+
+        document.getElementById('newsEnforcement').innerHTML = groups.enforcement.map((n, i) => renderNewsRow(n, i)).join('') || '<div style="color:var(--text-muted);font-size:12px;padding:8px 16px">Keine Meldungen</div>';
+        document.getElementById('countEnforcement').textContent = groups.enforcement.length + ' Meldungen';
+
+        document.getElementById('newsMedia').innerHTML = groups.media.map((n, i) => renderNewsRow(n, i)).join('') || '<div style="color:var(--text-muted);font-size:12px;padding:8px 16px">Keine Meldungen</div>';
+        document.getElementById('countMedia').textContent = groups.media.length + ' Meldungen';
+
+        document.getElementById('newsTech').innerHTML = groups.tech.map((n, i) => renderNewsRow(n, i)).join('') || '<div style="color:var(--text-muted);font-size:12px;padding:8px 16px">Keine Meldungen</div>';
+        document.getElementById('countTech').textContent = groups.tech.length + ' Meldungen';
     }
 
     function renderConf() {
@@ -1716,8 +1762,7 @@
     function renderAll() {
         renderStats();
         renderFilters();
-        renderTrending();
-        renderNews();
+        renderGroupedNews();
         renderConf();
         document.getElementById('lastUpdate').textContent = 'Aktualisiert: ' + new Date().toLocaleTimeString('de-DE', {
             hour: '2-digit',
@@ -1729,8 +1774,7 @@
         state.filter = f;
         localStorage.setItem('aml_fil', f);
         renderFilters();
-        renderTrending();
-        renderNews();
+        renderGroupedNews();
     }
     function switchTab(tab) {
         state.tab = tab;
@@ -2213,14 +2257,22 @@
             }
         }
 
-        // All Google News RSS — most reliable, no broken direct feeds
-        await Promise.allSettled([
-        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('site:bafin.de Geldwäsche OR Sanktion OR Bußgeld') + '&hl=de&gl=DE&ceid=DE:de', 'BaFin', 10),
-        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('site:eba.europa.eu AML OR money laundering OR guidelines') + '&hl=en&gl=DE&ceid=DE:en', 'EBA', 10),
-        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('Geldwäsche OR "anti money laundering" OR AMLA OR "AML fine" OR KYC Bank') + '&hl=de&gl=DE&ceid=DE:de', 'AML News DE', 15),
-        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('"EU sanctions" bank OR "terrorism financing" OR "money laundering" penalty') + '&hl=en&gl=DE&ceid=DE:en', 'Sanctions/CFT', 15),
-        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('(Deloitte OR PwC OR EY OR KPMG) ("money laundering" OR "financial crime" OR AML)') + '&hl=en&gl=DE&ceid=DE:en', 'Big4 / FATF', 10),
-        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('EIOPA OR "insurance money laundering" OR "Versicherung Geldwäsche"') + '&hl=de&gl=DE&ceid=DE:de', 'Insurance / EIOPA', 8),
+        // Google News RSS feeds — broad queries, DE + EN, covering all categories
+        await Promise.allSettled([// 1) Regulatoren direkt (BaFin, EBA, AMLA)
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('BaFin Geldwäsche OR Bußgeld OR Sanktion OR Anordnung OR Sonderbeauftragter') + '&hl=de&gl=DE&ceid=DE:de', 'BaFin', 12),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('EBA OR AMLA "anti-money laundering" OR AML OR guidelines OR "technical standards"') + '&hl=en&gl=DE&ceid=DE:en', 'EBA / AMLA', 12), // 2) Geldwäsche & AML breit (DE)
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('Geldwäsche Bank OR Versicherung OR Geldbuße OR Bußgeld OR Compliance') + '&hl=de&gl=DE&ceid=DE:de', 'Geldwäsche DE', 15), // 3) AML Enforcement international
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('"money laundering" fine OR penalty OR enforcement OR investigation bank Europe') + '&hl=en&gl=DE&ceid=DE:en', 'Enforcement EN', 12), // 4) Sanctions, Embargo, CFT
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('EU Sanktionen Bank OR Embargo OR Finanzsanktionen OR Terrorismusfinanzierung') + '&hl=de&gl=DE&ceid=DE:de', 'Sanctions DE', 10),
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('"EU sanctions" compliance OR evasion OR "terrorism financing" OR "asset freeze" bank') + '&hl=en&gl=DE&ceid=DE:en', 'Sanctions EN', 10), // 5) KYC, CDD, Onboarding
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('KYC Bank OR "customer due diligence" OR "Know Your Customer" OR Identifizierung Sorgfaltspflicht') + '&hl=de&gl=DE&ceid=DE:de', 'KYC / CDD', 10), // 6) Crypto, Krypto, MiCAR, VASP
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('Krypto Geldwäsche OR "crypto AML" OR MiCAR OR VASP OR "virtual assets" money laundering') + '&hl=de&gl=DE&ceid=DE:de', 'Crypto / MiCAR', 10), // 7) KI, AI, RegTech
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('KI Geldwäsche OR KI Compliance OR "AI AML" OR RegTech OR "machine learning" "money laundering"') + '&hl=de&gl=DE&ceid=DE:de', 'KI / RegTech', 10), // 8) Big4 Reports & Studien
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('(Deloitte OR PwC OR EY OR KPMG) (Geldwäsche OR "money laundering" OR "financial crime" OR AML OR Compliance)') + '&hl=de&gl=DE&ceid=DE:de', 'Big4', 10), // 9) FATF, Wolfsberg, Basel
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('FATF OR "Basel AML" OR Wolfsberg "money laundering" OR Geldwäsche') + '&hl=en&gl=DE&ceid=DE:en', 'FATF / Standards', 8), // 10) Versicherung & EIOPA
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('EIOPA OR Versicherung Geldwäsche OR "insurance AML" OR "insurance compliance" OR Lebensversicherung KYC') + '&hl=de&gl=DE&ceid=DE:de', 'Insurance / EIOPA', 8), // 13) Deutsche Medien: Handelsblatt, Tagesschau, NDR, SZ, FAZ
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('(Handelsblatt OR Tagesschau OR NDR OR Süddeutsche OR FAZ) Geldwäsche OR Bußgeld OR Sanktionen OR "Financial Crime" Bank') + '&hl=de&gl=DE&ceid=DE:de', 'Deutsche Medien', 12), // 14) Fachmedien & Wire: Reuters, Bloomberg, Finextra, Compliance
+        fetchRSS('https://news.google.com/rss/search?q=' + encodeURIComponent('(Reuters OR Bloomberg OR Finextra) "money laundering" OR AML OR "financial crime" Europe bank') + '&hl=en&gl=DE&ceid=DE:en', 'Fachmedien EN', 10),
         ]);
 
         // Deduplicate & sort
@@ -2258,19 +2310,22 @@
 
     function autoCat(t) {
         const l = t.toLowerCase();
-        if (/amla|anti-money laundering authority/.test(l))
+        if (/amla|anti-money laundering authority|eu.?aml.?behörde/.test(l))
             return 'amla';
-        if (/gwg|geldwäsche.?gesetz|transparenzregister/.test(l))
+        if (/gwg|geldwäsche.?gesetz|transparenzregister|geldwäscherecht/.test(l))
             return 'gwg';
-        if (/sanktion|sanctions|embargo|terrorist|terrorismus|cfт|counter.?terror|asset.?freeze|restrictive measures|ofac/.test(l))
+        if (/sanktion|sanctions|embargo|terrorist|terrorismus|counter.?terror|asset.?freeze|restrictive measures|ofac|finanzsanktion/.test(l))
             return 'sanctions';
-        if (/bußgeld|fine|penalty|enforcement|strafe/.test(l))
+        if (/bußgeld|geldbuße|fine\b|penalty|enforcement|strafe|anordnung|sonderbeauftragter|aufsichtsmaßnahme|consent.?order|cease.?and.?desist|settlement.*(?:bank|launder)/.test(l))
             return 'enforcement';
-        if (/\bki\b|künstliche intelligenz|machine learning|regtech|neural|ai.?tool/.test(l))
+        if (/\bki\b|künstliche intelligenz|machine learning|regtech|neural|ai.?tool|ai.?aml|artificial intelligence|chatbot.*compliance|suptech/.test(l))
             return 'ki-tools';
-        // Official regulation: RTS, ITS, directives, regulations, Verordnung, Rundschreiben, delegated acts
-        if (/\brts\b|regulatory technical standard|implementing technical standard|\bits\b|directive|verordnung|rundschreiben|delegated act|richtlinie|regulierung|regulation .?\d{4}|amld.?\d|amlr\b|6\.\s*geldwäsche|eu.?paket|single rulebook|\beba\b.*(?:final|draft|standard|guidelines)|bafin.*(?:rundschreiben|anordnung|allgemeinverfügung)|eiopa.*(?:standard|opinion|regulation)|amla.*(?:rts|standard|consultation|draft)/.test(l))
+        if (/krypto|crypto|micar|vasp|virtual asset|defi|stablecoin|bitcoin.*(?:launder|geldwäsche)|blockchain.*compliance/.test(l))
+            return 'ki-tools';
+        if (/\brts\b|regulatory technical standard|implementing technical standard|\bits\b|directive|verordnung|rundschreiben|delegated act|richtlinie|regulierung|regulation.?\d{4}|amld.?\d|amlr\b|6\.\s*geldwäsche|eu.?paket|single rulebook|\beba\b.*(?:final|draft|standard|guideline)|bafin.*(?:rundschreiben|anordnung|allgemeinverfügung)|eiopa.*(?:standard|opinion|regulation)|amla.*(?:rts|standard|consultation|draft)/.test(l))
             return 'regulation';
+        if (/\bkyc\b|know your customer|customer due diligence|\bcdd\b|sorgfaltspflicht|identifizierung|onboarding|pep\b|politically exposed/.test(l))
+            return 'guidance';
         return 'guidance';
     }
 
